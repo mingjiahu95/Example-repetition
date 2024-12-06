@@ -1,0 +1,33 @@
+Best-fitting-parameters model  (row 1, column 1)
+
+
+between=    4.000
+within=     0.301
+   c=       0.491
+gammaC=     1.000
+gammaR=     1.922
+k(REP)=    51.547
+k(NREP)=   13.526
+back=       0.000
+
+
+
+Formatting of predictions:
+
+
+
+Cat
+               old  prot    low    med    high
+REP   1  1   0.957  0.916  0.905  0.853  0.760
+NREP  1  2   0.884  0.919  0.910  0.863  0.778
+
+    	     0.9579 0.9174 0.9066 0.8564 0.7613
+             0.8841 0.9211 0.9118 0.8689 0.7795
+
+Rec
+               old   med    prot   foil
+REP   2  1   0.853  0.352  0.767  0.072  0.000
+NREP  2  2   0.691  0.623  0.941  0.154  0.000
+
+    	     0.8521 0.3479 0.7658 0.0746 0.0000
+             0.6906 0.6182 0.9411 0.1558 0.0000

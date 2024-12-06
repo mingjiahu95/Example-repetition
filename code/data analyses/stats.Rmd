@@ -1,0 +1,180 @@
+---
+title: "statistical analysis"
+author: "Mingjia"
+date: "5/14/2020"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(car)
+library(rstatix)
+library(dplyr)
+contrast.default = options("contrasts")
+options(contrasts = c("contr.helmert", "contr.poly"))
+```
+
+# recognition learning
+
+```{r}
+# 2 x 15 ANOVA: cond x block
+rec_train = read.table("rec_train_data.txt")[,c(1,2,3,5)]
+
+res.aov <- anova_test(formula = accuracy ~ cond * block + Error(ID|block),
+                      data=rec_train,
+                      type=3, effect.size = "pes",detailed=T)
+
+get_anova_table(res.aov,correction = "auto")
+
+# 2 x 2 ANOVA: cond x block_third
+rec_train$block_third = ifelse(rec_train$block %in% 1:5,1,2) #block: 1-5 -- 1; 6-15 -- 2
+rec_train = rec_train %>%
+            group_by(ID,cond,block_third) %>%
+            summarise(accuracy = mean(accuracy)) %>%
+            data.frame()
+
+res.aov <- anova_test(formula = accuracy ~ cond * block_third + Error(ID|block_third),
+                      data=rec_train,
+                      type=3, effect.size = "pes")
+
+get_anova_table(res.aov,correction = "auto")
+
+```
+The interaction term is significant but its effect size is small. 
+
+*pse stands for partial eta square, which is a measure of effect size
+
+
+## recognition transfer
+
+```{r}
+
+# 2X4 ANOVA : condition x itemtype 
+rec_test = read.table("rec_test_data.txt")[,c(1,2,3,5)]
+levels(rec_test$itemtype) = c("Foil","New","Old","Proto") #rename levels
+rec_test$itemtype = factor(rec_test$itemtype,
+                          levels=c("Old","New","Proto","Foil")) #reorder factor level
+rec_test$cond = factor(rec_test$cond,levels = c("rep","nrep"))
+
+
+res.aov <- anova_test(oldprop ~ cond * itemtype + Error(ID|itemtype),data=rec_test, 
+                      type=3, effect.size = "pes",detailed=T)
+get_anova_table(res.aov,correction = "auto")
+
+
+```
+As expected, all main effects and interactions are significant.
+
+
+```{r}
+# planned contrasts between old, new med and prototypes
+rec_test %>%
+  group_by(cond) %>%
+  pairwise_t_test(oldprop ~ itemtype, paired = TRUE, 
+                  comparisons = list(c("Old","New"),c("Old","Proto")),
+                  p.adjust.method = "bonferroni")
+
+# compute cohen's d
+rec_test %>%
+  group_by(cond) %>%
+  cohens_d(oldprop ~ itemtype, paired = TRUE, 
+                  comparisons = list(c("Old","New")))
+
+# NREP vs. REP: Old vs. New
+# y1 = rec_test$oldprop[rec_test$cond == "nrep" & rec_test$itemtype == "Old"] -              rec_test$oldprop[rec_test$cond == "nrep" & rec_test$itemtype == "New"] 
+# y2 = rec_test$oldprop[rec_test$cond == "rep" & rec_test$itemtype == "Old"] -              rec_test$oldprop[rec_test$cond == "rep" & rec_test$itemtype == "New"] 
+# t.test(y1,y2)
+```
+In both REP and NREP conditions, P(old) for old items is sig. higher than new medium distortions.\
+
+In NREP condition, P(old) for old items is sig. lower than prototypes. In REP condition, P(old) for old items is marginally sig. higher than prototypes (p value is less than .05 after Bonferroni correction). 
+
+# classification learning
+```{r}
+# 2 x 15 ANOVA: cond x block
+
+class_train = read.table("class_train_data.txt")[,c(1,2,3,5)]
+
+res.aov <- anova_test(formula = accuracy ~ cond * block + Error(ID|block),
+                      data=class_train,
+                      type=3, effect.size = "pes",detailed=T)
+
+get_anova_table(res.aov,correction = "auto")
+
+# 2 x 2 ANOVA: cond x block_third
+class_train$block_third = ifelse(class_train$block %in% 1:5,1,2) #block: 1-5 -- 1; 6-15 -- 2
+class_train = class_train %>%
+            group_by(ID,cond,block_third) %>%
+            summarise(accuracy = mean(accuracy)) %>%
+            data.frame()
+
+res.aov <- anova_test(formula = accuracy ~ cond * block_third + Error(ID|block_third),
+                      data=class_train,
+                      type=3, effect.size = "pes")
+
+get_anova_table(res.aov,correction = "auto")
+
+
+```
+The interaction term is *NOT* significant.
+
+# classification transfer
+```{r}
+# 2 x 4 ANOVA : condition x new distortions
+## subset itemtype variable
+class_test = read.table("class_test_data.txt")[,c(1,2,3,5)]
+class_test$cond = factor(class_test$cond,levels = c("rep","nrep"))
+
+class_test1 = class_test[class_test$itemtype != "old",]
+class_test1$itemtype = droplevels(class_test1$itemtype)
+class_test1$itemtype = factor(class_test1$itemtype,
+                              levels=c("proto","newlow","newmed","newhigh"))
+levels(class_test1$itemtype) = c("Proto","Low","Med","High") 
+
+## run ANOVA
+res.aov <- anova_test(accuracy ~ cond * itemtype + Error(ID|itemtype),
+                      data= class_test1,
+                      type=3, effect.size = "pes",detailed=T)
+get_anova_table(res.aov,correction = "auto")
+
+
+```
+Only the main effect of item type is significant so the overall typicality gradient effect is confirmed.
+
+
+```{r}
+# 2 x 3 ANOVA : condition x itemtypes (old, new med, proto)
+## subset itemtype variable
+class_test2 = class_test[class_test$itemtype %in% c("old","newmed","proto"),]
+class_test2$itemtype = droplevels(class_test2$itemtype)
+levels(class_test2$itemtype) = c("New","Old","Proto") 
+class_test2$itemtype = factor(class_test2$itemtype,
+                              levels=c("Old","New","Proto"))
+
+## run ANOVA
+res.aov <- anova_test(accuracy ~ cond * itemtype + Error(ID|itemtype),
+                      data=as.data.frame(class_test2),
+                      type=3, effect.size = "pes",detailed=T)
+get_anova_table(res.aov,correction = "auto")
+
+
+# planned contrasts across distortions
+# class_test1 %>%
+#   group_by(cond) %>%
+#   pairwise_t_test(accuracy ~ itemtype, paired = TRUE, p.adjust.method = "bonferroni")
+
+# planned contrast between old and new medium for both conditions
+class_test2 %>%
+  group_by(cond) %>%
+  pairwise_t_test(accuracy ~ itemtype, paired = TRUE,
+                  comparisons = list(c("Old","New"),c("Old","Proto")),
+                  p.adjust.method = "bonferroni")
+
+```
+Only the main effect of itemtype is significant.\
+
+In the REP condition, P(correct) for old items is sig. higher than new medium distortion. In NREP condition, P(correct) for old items is *NOT* sig. different from new medium distortion.\
+
+In the REP condition, P(correct) for old items is *NOT* sig. different from prototypes. In NREP condition, P(correct) for old items is sig. lower than prototypes.\

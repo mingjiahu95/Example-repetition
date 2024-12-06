@@ -1,0 +1,53 @@
+
+between    3.645
+within     0.301
+c          0.571
+back       0.000
+gamma      1.604
+crit:REP  18.494
+crit:NREP  5.962
+
+
+
+
+
+
+Classification
+
+
+REP
+            old    prot   low     med   high
+
+  pred.    0.981  0.937  0.916  0.859  0.745
+  obs.     0.959  0.940  0.923  0.865  0.766
+
+
+
+NREP
+            old    prot   low     med   high
+             
+  pred.    0.914  0.960  0.946  0.896  0.782
+  obs.     0.865  0.939  0.886  0.848  0.744
+
+
+
+Recognition
+
+REP
+           old    med   prot   foil
+
+  pred.   0.854  0.358  0.746  0.105  
+  obs.    0.845  0.343  0.784  0.053  
+
+
+NREP
+
+           old    med   prot   foil
+
+  pred.   0.679  0.615  0.917  0.206  
+  obs.    0.693  0.632  0.916  0.151  
+
+
+
+
+  fit=           0.019

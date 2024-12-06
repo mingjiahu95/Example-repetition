@@ -1,0 +1,63 @@
+In the below, "pred." stands for predictions from the model, 
+              "obs." stands for my rough estimate of the 
+               observed data from the graphs
+
+               "crit" are the criterion parameters
+                 in the recognition conditions
+
+SSD = 0.009  (no weights, just straight sum of squared deviations between
+                 predicted and observed proportions)
+ 
+between   3.181
+within    0.206
+c         0.696
+back      0.000
+gamma     1.620
+crit(2,1) 21.119   Exp. 2, repeat
+crit(2,2) 10.474   Exp. 2, no-repeat
+crit(3,1) 26.956   Exp. 3, repeat
+crit(3,2) 11.979   Exp. 3, no-repeat
+
+
+Categorization, Exp. 1
+
+               prot   low    med   high
+
+pred.  1  1   0.964  0.957  0.917  0.832
+ obs.  1  1   0.980  0.980  0.920  0.840     repeat condition
+
+
+pred.  1  2   0.971  0.965  0.933  0.854
+ obs.  1  2   0.990  0.970  0.960  0.890     no-repeat condition
+
+
+
+Recognition, Exp. 2
+
+                old   med    foil
+
+pred.  2  1   0.887  0.628  0.153       
+ obs.  2  1   0.900  0.600  0.200       repeat condition
+
+
+pred.  2  2   0.808  0.784  0.225  
+ obs.  2  2   0.780  0.800  0.240       no-repeat condition
+
+
+
+
+
+Recognition, Exp. 3
+
+                old    med   prot
+
+pred.  3  1   0.860  0.584  0.864       
+ obs.  3  1   0.860  0.580  0.870       repeat condition
+
+
+pred.  3  2   0.789  0.764  0.941  
+ obs.  3  2   0.780  0.780  0.920       no-repeat condition
+
+
+
+
